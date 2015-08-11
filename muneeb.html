@@ -1,0 +1,80 @@
+<html>
+  <body>
+    <p>Enter Data </p>
+
+      <form id="contact_form" action="action.ready()" method="POST" enctype="multipart/form-data">
+  <div class="row">
+    <label for="name">Your name:</label><br />
+    <input id="name" class="input" name="name" type="text" value="" size="30" /><br />
+  </div>
+  <div class="row">
+    <label for="email">Your email:</label><br />
+    <input id="email" class="input" name="email" type="text" value="" size="30" /><br />
+  </div>
+  <div class="row">
+    <label for="message">Your message:</label><br />
+    <textarea id="message" class="input" name="message" rows="7" cols="30"></textarea><br />
+  </div>
+  <input id="submit_button" type="submit" value="Send email" />
+</form>           
+
+
+    <script src="./src/sag.js"></script>
+    <script>
+    /*
+     * A real quick example of how to grab a document and update it with Sag-JS
+     * in the browser.
+     */
+
+function ready(){
+document.write("data Entered");
+    // We are going to use a local web proxy, hence port 80.
+    var couch = sag.server('localhost', '80');
+   
+    couch.setPathPrefix('/db');
+    // Set the database
+    couch.setDatabase('muneeb');
+    // Provide the credentials
+    couch.login({
+      user: 'mSuleman',
+      pass: 'Seecs@123',
+      type: couch.AUTH_BASIC
+    });
+    // Go and get the doc.
+    couch.get({
+      url: '/85275275ab7b02bc9902756a56001c0a',
+      callback: function(resp, success) {
+        var doc;
+        // Update the doc.
+        if(success) {
+          doc = resp.body;
+        }
+        else if(resp._HTTP.status == 404) {
+          doc = {
+            _id: 'muneebPostID',
+            views: 0
+          };
+        }
+        else {
+          console.log('Error getting blog post: HTTP ' + resp._HTTP.status);
+        }
+        doc.views++;
+        // Send the updated doc.
+        couch.put({
+          id: doc._id, 
+          data: doc,
+          callback: function(resp, success) {
+            if(success) {
+              console.log(resp);
+              console.log('Done!');
+            }
+            else {
+              console.log('Error updating blog post: HTTP ' + resp._HTTP.status);
+            }
+          }
+        });
+      }
+    });}
+    </script>
+  </body>
+</html> 
